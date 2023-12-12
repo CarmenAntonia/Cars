@@ -1,3 +1,4 @@
+using Cars.DataBase;
 using Microsoft.AspNetCore.Mvc;
 using Cars.Entities;
 namespace Cars.Controllers;
@@ -7,26 +8,22 @@ namespace Cars.Controllers;
 
 public class OwnersController : ControllerBase
 {
-    private static readonly List<Owner> OwnersList= new()
-    {
-        Owner.Create("Rata", "Antonia"),
-        Owner.Create("Ciurescu", "Raul")
-    };
+    private readonly AppDbContext _context;
 
-    public static List<Owner> GetOwnersList()
+    public OwnersController(AppDbContext context)
     {
-        return OwnersList;
+        _context = context;
     }
     [HttpGet(Name = "GetAllOwners")]
     public ActionResult GetOwners()
     {
-        return Ok(OwnersList);
+        return Ok(_context.Cars.ToList());
     }
     
     [HttpGet( "{Id}")]
     public ActionResult GetOwners(string id)
     {
-        var owner = OwnersList.FirstOrDefault(o => o.Id == id);
+        var owner = _context.Cars.FirstOrDefault(o => o.Id == id);
 
         if (owner is null)
             return NotFound($"Owner with id: {id} does not exist");
